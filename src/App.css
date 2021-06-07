@@ -12,6 +12,9 @@ body, .app {
 
 /* main page */
 
+.searchButton {
+  cursor:pointer;
+}
 .list-books-title {
   padding: 10px 0;
   background: #2e7c31;
