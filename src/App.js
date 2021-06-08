@@ -15,7 +15,8 @@ class BooksApp extends React.Component {
         "currentlyReading": "Currently Reading",
         "wantToRead": "Want to Read",
         "read": "Read"
-      }
+      },
+      booksDB: {},
     }
   }
 
@@ -36,6 +37,7 @@ class BooksApp extends React.Component {
 
   addBookToShelf = (book, shelf) => {
     const { shelves } = this.state;
+    book.shelf = shelf;
 
     if (shelves[shelf]) {
       this.setState((prevState) => ({
@@ -55,14 +57,24 @@ class BooksApp extends React.Component {
             title: shelf,
             books: [book],
           }
-        }
-      }))
+        },
+      })) 
     }
+    this.setState((prevState) => ({
+      booksDB: {
+        ...prevState.booksDB,
+        [book.id]: book,
+      }
+    }))
   }
 
   removeBookFromShelf = (book, newShelf) => {
     const currShelf = book.shelf;
     book.shelf = newShelf;
+
+    let booksDBState = { ...this.state.booksDB };
+    delete booksDBState[book.id];
+
 
     this.setState((prevState) => ({
       shelves: {
@@ -72,24 +84,23 @@ class BooksApp extends React.Component {
           books: prevState.shelves[currShelf].books.filter((b, idx) => book.id !== b.id), //return new array that is everything not at the index of the book
         }
       },
-
+      booksDB: booksDBState
     }));
   }
 
   shelfChange = (book, shelf) => {
     BooksAPI.update(book, shelf)
       .then(() => {
-        this.removeBookFromShelf(book, shelf); //remove frmo the current shelf
+        if(this.state.booksDB[book.id]) this.removeBookFromShelf(book, shelf); //remove from the current shelf, if a book exists in our key:value pair
       })
       .then(() => {
-        this.addBookToShelf(book, shelf); //put it in the new shelf
+        if(shelf !== "none") this.addBookToShelf(book, shelf); //put it in the new shelf if the new shelf isn't none.
       })
   }
   render() {
-    const { shelves, map } = this.state;
-    console.log(shelves);
-    return (
+    const { shelves, map, booksDB } = this.state;
 
+    return (
       <div className="app">
 
         <Route
@@ -116,7 +127,7 @@ class BooksApp extends React.Component {
               </div>
               <Link to="/search">
                 <div className="open-search">
-                  <button style={{ cursor: "pointer" }} onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>
+                  <button style={{ cursor: "pointer" }}>Add a book</button>
                 </div>
               </Link>
             </div>
@@ -125,7 +136,7 @@ class BooksApp extends React.Component {
         <Route path="/search">
           <BookSearch
             shelfChange={this.shelfChange}
-
+            booksDB={booksDB}
           />
         </Route>
       </div>
