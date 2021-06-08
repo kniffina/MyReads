@@ -19,7 +19,11 @@ class Book extends Component {
             <li>
                 <div className="book">
                     <div className="book-top">
-                        <div className="book-cover" style={{ width: 128, height: 192, backgroundImage: 'url(' + book.imageLinks.smallThumbnail + ')' }}></div>
+                        { book.imageLinks ? 
+                            (<div className="book-cover" style={{ width: 128, height: 192, backgroundImage: 'url(' + book.imageLinks.smallThumbnail + ')' }}>
+                            </div>) : (<div className="book-cover" style={{ width: 128, height: 192}}>
+                            </div>)
+                        }
                         <div className="book-shelf-changer">
                             <select onChange={this.shelfChange} value={book.shelf ? book.shelf : "none"}>
                                 <option value="move" disabled>Move to...</option>
