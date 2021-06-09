@@ -19,7 +19,7 @@ class Book extends Component {
             <li>
                 <div className="book">
                     <div className="book-top">
-                        { book.imageLinks ? 
+                        { book.imageLinks ?  //if there is no imageLinks it will throw an error so we need to check for it.
                             (<div className="book-cover" style={{ width: 128, height: 192, backgroundImage: 'url(' + book.imageLinks.smallThumbnail + ')' }}>
                             </div>) : (<div className="book-cover" style={{ width: 128, height: 192}}>
                             </div>)
